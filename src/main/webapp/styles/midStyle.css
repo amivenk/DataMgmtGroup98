@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+/* If anyone is a css wizard that would be awesome */
+.loginDiv {
+	margin: 75px;
+}
+.inputField {
+	margin: 2px;
+	padding: 6px;
+	border-radius: 6px;
+}
+.defaultButton {
+	margin: 2px;
+	padding: 6px;
+	border-radius: 15px;
+}
+body {
+	font-family: "Arial";
+}
+
+.warningText {
+	color: red;
+}

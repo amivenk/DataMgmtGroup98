@@ -6,22 +6,12 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Dashboard</title>
-	<style>
-		.defaultButton {
-			margin: 2px;
-			padding: 6px;
-			border-radius: 15px;
-		}
-		body {
-			font-family: "Arial";
-		}
-	</style>
+	<link rel="stylesheet" href="./styles/midStyle.css" />
 </head>
 <body>
 	<%
 		// Get the username from the session, set by checkCredentials
 		String username = (String)session.getAttribute("username");
-	
 	%>
 	<script type="text/javascript">
 		var invalid = "<% out.print(username); %>";
@@ -38,6 +28,25 @@
 			out.print("<h2>Welcome " + username + "!</h2>");
 		}
 	%>
+	
+	<h4>Current Reservations</h4>
+	<p>placeholder<p>
+	
+	<h4>Past Reservations</h4>
+	<p>placeholder</p>
+		
+	<h4>Search Train Schedules</h4>
+	<form action="search.jsp">
+		Origin:
+		<input type="text" name="origin" />
+		Destination:
+		<input type="text" name="destination" />
+		Date of Travel:
+		<input type="text" name="date" />
+		<input type="submit" value="Search" class="defaultButton" />
+	</form>
+	<br>
+	
 	<form action="logout.jsp">
 		<input type="submit" value="Log out" class="defaultButton" />
 	</form>
