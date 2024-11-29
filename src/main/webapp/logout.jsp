@@ -6,16 +6,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Logout</title>
-	<style>
-		body {
-			font-family: "Arial";
-		}
-		.defaultButton {
-			margin: 2px;
-			padding: 6px;
-			border-radius: 15px;
-		}
-	</style>
+	<link rel="stylesheet" href="./styles/midStyle.css" />
 </head>
 <body>
 	<%
