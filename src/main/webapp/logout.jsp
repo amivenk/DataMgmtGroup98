@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="./styles/midStyle.css" />
 </head>
 <body>
+<div class="marginDiv">
 	<%
 		// Invalidate the session
 		session.removeAttribute("username");
@@ -19,5 +20,6 @@
 	<form action="login.jsp">
 		<input type="submit" value="Back to Login" class="defaultButton" />
 	</form>
+</div>
 </body>
 </html>

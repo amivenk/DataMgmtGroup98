@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="./styles/midStyle.css" />
 </head>
 <body>
+<div class="marginDiv">
 	<%
 		// Get the username from the session, set by checkCredentials
 		String username = (String)session.getAttribute("username");
@@ -38,11 +39,11 @@
 	<h4>Search Train Schedules</h4>
 	<form action="search.jsp">
 		Origin:
-		<input type="text" name="origin" />
+		<input type="text" name="origin" class="inputField"/>
 		Destination:
-		<input type="text" name="destination" />
+		<input type="text" name="destination" class="inputField"/>
 		Date of Travel:
-		<input type="text" name="date" />
+		<input type="text" name="date" class="inputField"/>
 		<input type="submit" value="Search" class="defaultButton" />
 	</form>
 	<br>
@@ -50,5 +51,6 @@
 	<form action="logout.jsp">
 		<input type="submit" value="Log out" class="defaultButton" />
 	</form>
+</div>
 </body>
 </html>

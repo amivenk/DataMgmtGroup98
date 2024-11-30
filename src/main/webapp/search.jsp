@@ -8,6 +8,8 @@
 	<link rel="stylesheet" href="./styles/midStyle.css" />
 </head>
 <body>
-	
+<div class="marginDiv">
+
+</div>
 </body>
 </html>

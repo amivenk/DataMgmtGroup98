@@ -27,19 +27,25 @@
 	
 		// If the noLogin attribute is set from checkCredentials it will alert the user
 		var invalid = "<% out.print(session.getAttribute("noLogin")); %>";
+		var takenUsername = "<% out.print(session.getAttribute("takenUsername")); %>";
 		
 		if (invalid != "null") {
 			alert("Invalid Login.");
+		} else if (takenUsername != "null") {
+			alert("Username is already in use.")
 		}
 		
-		<% session.removeAttribute("noLogin"); %>
+		<% 
+			session.removeAttribute("noLogin");
+			session.removeAttribute("takenUsername");
+		%>
 	</script>
-	<div class="loginDiv">
+	<div class="marginDiv">
 	<h2>Login</h2>
 	<form method="post" action="checkCredentials.jsp">
-		<input name="username" type="text" placeholder="Username" class="inputField" />
+		<input name="username" type="text" placeholder="Username" class="inputField" required/>
 		<br>
-		<input name="password" type="password" placeholder="Password" class="inputField" />
+		<input name="password" type="password" placeholder="Password" class="inputField" required/>
 		<br>
 		<input id="loginButton" type="submit" value="Login" class="defaultButton" />
 	</form>

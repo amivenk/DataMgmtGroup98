@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="./styles/midStyle.css" />
 </head>
 <body>
+<div class="marginDiv">
 	<h4>Edit Train Schedules</h4>
 	<p>placeholder</p>
 	
@@ -40,5 +41,6 @@
 	<form action="logout.jsp">
 		<input type="submit" value="Log out" class="defaultButton" />
 	</form>
+</div>
 </body>
 </html>

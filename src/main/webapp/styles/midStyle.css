@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 /* If anyone is a css wizard that would be awesome */
-.loginDiv {
+.marginDiv {
 	margin: 75px;
 }
 .inputField {
@@ -20,4 +20,8 @@ body {
 
 .warningText {
 	color: red;
+	visibility: hidden;
+}
+th {
+	margin: 5px;
 }
