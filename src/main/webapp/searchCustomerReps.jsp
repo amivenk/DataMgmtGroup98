@@ -9,8 +9,15 @@
 	<link rel="stylesheet" href="./styles/midStyle.css" />
 </head>
 <body>
+<script type="text/javascript">
+	function spawnEditForm(ssn) {
+		console.log("Editing: "+ssn);
+		document.getElementById("editFormSSN").value = ssn;
+		document.getElementById("editForm").style.visibility = "visible";
+	}
+</script>
 <div class="marginDiv">
-<h2>Customer Representatives</h2>
+<h2 style="text-decoration: underline">Customer Representatives</h2>
 	<table>
 	<tr>
 		<th>SSN&emsp;</th>
@@ -50,10 +57,22 @@
 					continue;
 				out.print("<td>"+results.getString(s)+"</td>");
 			}
+			out.print("<td><button class=\"defaultButton\" onclick=\"spawnEditForm(\'"+results.getString("ssn")+"\')\">Edit</button></td>");
+			
 			out.print("</tr>");
 		}
 	%>
 	</table>
+	<form action="editRep.jsp" method="post" id="editForm" style="visibility: hidden">
+	<br><div style="font-weight: bold">Leave a field blank to retain its current value. </div><br>
+		<input type="text" name="ssn" id="editFormSSN" class="inputField" readonly/>
+		<input type="text" name="fname" id="editFirstName" placeholder="New first name" class="inputField"/>
+		<input type="text" name="lname" id="editLastName" placeholder="New last name" class="inputField"/>
+		<input type="text" name="username" id="editUsername" placeholder="New username" class="inputField"/>
+		<input type="text" name="password" id="editPassword" placeholder="New password" class="inputField"	/>
+		<input type="submit" value="Save" class="defaultButton"/>
+	</form>
+	
 	<form action="admin.jsp">
 		<input type="submit" value="Back" class="defaultButton" />
 	</form>

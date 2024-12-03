@@ -10,12 +10,17 @@
 <body>
 <script type="text/javascript">
 	var repAdded = "<% out.print(session.getAttribute("repAdded")); %>";
+	var repChanged = "<% out.print(session.getAttribute("repChanged")); %>";
 	
 	if (repAdded != "null") {
 		alert("Added "+repAdded+" as a customer representative.");
 	}
+	if (repChanged != "null") {
+		alert("Changed attributes of employee "+repChanged);
+	}
 	<% 
 		session.removeAttribute("repAdded");
+		session.removeAttribute("repChanged");
 	%>
 	
 </script>
