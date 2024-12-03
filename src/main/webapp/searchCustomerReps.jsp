@@ -31,7 +31,6 @@
 		String lastName = request.getParameter("lastName");
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		// String ssn = request.getParameter("ssn") == null ? "" : "e.ssn=" + request.getParameter("ssn");
 				
 		StringBuilder qBuilder = new StringBuilder("SELECT * FROM trainsdb.employee WHERE type='customerRep'");
 		for (String s : parameters) {

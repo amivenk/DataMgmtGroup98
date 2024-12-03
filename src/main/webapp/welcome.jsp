@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.io.*,java.util.*,java.sql.*, com.group98.pkg.*" %>
+<%@ page import="java.io.*,java.util.*,java.sql.*, com.group98.pkg.*, java.time.*" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,6 +21,7 @@
 			alert("Invalid Session.");
 		}
 	</script>
+	
 	<%
 		// If there is no username the session is invalid
 		if (username == null) {
@@ -31,23 +32,124 @@
 	%>
 	
 	<h4>Current Reservations</h4>
-	<p>placeholder<p>
+	<table>
+		<tr>
+			<th>Date&emsp;</th>
+			<th>Line&emsp;</th>
+			<th>Train #&emsp;</th>
+			<th>Passenger&emsp;</th>
+			<th>Type&emsp;</th>
+			<th>Total&emsp;</th>
+		</tr>
+		<%
+			ApplicationDB db = new ApplicationDB();
+			Connection con = db.getConnection();
+			Statement stmt = con.createStatement();
+			
+			LocalDate today = LocalDate.now();
+			
+			// It's only split so it isn't a gigantic line of mess
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT date, linename, tid, passenger, type, total ");
+			query.append("FROM trainsdb.reservation r, trainsdb.schedule sc ");
+			query.append("WHERE r.username='"+username+"' AND r.date>='"+today+"' AND r.scid=sc.scid;");
+			String q = query.toString();
+			
+			ResultSet results = stmt.executeQuery(q);
+			ResultSetMetaData rsmd = results.getMetaData();
+			
+			while (results.next()) {
+				out.print("<tr>");
+				for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+				 	out.print("<td>"+results.getString(rsmd.getColumnName(i))+"</td>");
+				}
+				out.print("</tr>");
+			}
+		%>
+	</table>
 	
 	<h4>Past Reservations</h4>
-	<p>placeholder</p>
+	<table>
+		<tr>
+			<th>Date&emsp;</th>
+			<th>Line&emsp;</th>
+			<th>Train #&emsp;</th>
+			<th>Passenger&emsp;</th>
+			<th>Type&emsp;</th>
+			<th>Total&emsp;</th>
+		</tr>
+		<%
+			q = q.replaceAll(">=", "<");
+			results = stmt.executeQuery(q);
+			rsmd = results.getMetaData();
+			
+			while (results.next()) {
+				out.print("<tr>");
+				for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+				 	out.print("<td>"+results.getString(rsmd.getColumnName(i))+"</td>");
+				}
+				out.print("</tr>");
+			}
+		%>
+	</table>
 		
 	<h4>Search Train Schedules</h4>
-	<form action="search.jsp">
+	<form method="post" action="searchSchedules.jsp">
 		Origin:
-		<input type="text" name="origin" class="inputField"/>
+		<select name="origin" id="originSelect">
+			<option value=""></option>
+			<%
+				// Populate origin list
+				q = "SELECT DISTINCT origin FROM trainsdb.schedule;";
+				results = stmt.executeQuery(q);
+				
+				while(results.next()) {
+					String o = results.getString("origin");
+					out.print("<option value=\""+o+"\">"+o+"</option>");
+				}
+			%>
+		</select>
 		Destination:
-		<input type="text" name="destination" class="inputField"/>
+		<select name="destination" id="destinationSelect">
+			<option value=""></option>
+			<%
+				// Populate Destination list
+				q = "SELECT DISTINCT dest FROM trainsdb.schedule;";
+				results = stmt.executeQuery(q);
+				
+				while(results.next()) {
+					String o = results.getString("dest");
+					out.print("<option value=\""+o+"\">"+o+"</option>");
+				}
+			%>
+		</select>
 		Date of Travel:
-		<input type="text" name="date" class="inputField"/>
+		<select name="date" id="dateSelect">
+			<option value=""></option>
+			<%
+				// Populate Dates
+				q = "SELECT DISTINCT DATE(departure) FROM trainsdb.schedule;";
+				results = stmt.executeQuery(q);
+				
+				while(results.next()) {
+					String o = results.getString("DATE(departure)");
+					out.print("<option value=\""+o+"\">"+o+"</option>");
+				}
+			%>
+		</select>
 		<input type="submit" value="Search" class="defaultButton" />
 	</form>
-	<br>
 	
+	<h4>Ask a Question</h4>
+	<form action="askQuestion.jsp" method="post">
+		<input type="text" name="question" class="bigInputField" />
+		<input type="submit" class="defaultButton" />
+	</form>
+	<form action="viewQuestions.jsp">
+		<input type="submit" class="defaultButton" value="View Questions" />
+	</form>
+	
+	<br>
 	<form action="logout.jsp">
 		<input type="submit" value="Log out" class="defaultButton" />
 	</form>

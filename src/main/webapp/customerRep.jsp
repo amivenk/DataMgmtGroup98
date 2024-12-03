@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="marginDiv">
-	<h4>Edit Train Schedules</h4>
+	<h4>Train Schedules</h4>
 	<p>placeholder</p>
 	
 	<h4>Customer Q&A</h4>

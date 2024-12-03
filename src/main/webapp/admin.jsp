@@ -50,6 +50,9 @@
 		<input type="submit" value="Search" class="defaultButton" />
 	</form>
 	
+	<h4>Revenue</h4>
+	
+	
 	<h4>Best Customer</h4>
 	<p>John Smith<p>
 	<% // This will just be a query that gets listed since there isn't any inputs required for it %>
