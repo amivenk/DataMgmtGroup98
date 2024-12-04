@@ -15,6 +15,11 @@
 		document.getElementById("editFormSSN").value = ssn;
 		document.getElementById("editForm").style.visibility = "visible";
 	}
+	function confirmDelete(e, ssn) {
+		if (!confirm("Are you sure you want to delete customer rep: "+ssn+"?")) {
+			e.preventDefault();
+		}
+	}
 </script>
 <div class="marginDiv">
 <h2 style="text-decoration: underline">Customer Representatives</h2>
@@ -58,7 +63,12 @@
 				out.print("<td>"+results.getString(s)+"</td>");
 			}
 			out.print("<td><button class=\"defaultButton\" onclick=\"spawnEditForm(\'"+results.getString("ssn")+"\')\">Edit</button></td>");
-			
+			out.print("<td><form action=\"delRep.jsp\" method=\"post\" onsubmit=\"confirmDelete(event, "+results.getString("ssn")+")\">");
+			out.print("<input type=\"submit\" value=\"Delete\" class=\"defaultButton\"/>");
+			out.print("<input value=\""+results.getString("ssn")+"\" type=\"text\" name=\"ssn\" style=\"visibility: hidden\" readonly/>");
+			// This input is just to hide the ssn for when the delete gets submitted
+			// There might be a simpler way of doing this but this also works for now
+			out.print("</form></td>");
 			out.print("</tr>");
 		}
 	%>

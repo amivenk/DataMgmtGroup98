@@ -6,21 +6,34 @@
 	<meta charset="UTF-8">
 	<title>Administration</title>
 	<link rel="stylesheet" href="./styles/midStyle.css" />
+	<%
+		// Get the username from the session, set by checkCredentials
+		String username = (String)session.getAttribute("username");
+	
+		if (username == null) {
+			response.sendRedirect("login.jsp");
+		}
+	%>
 </head>
 <body>
 <script type="text/javascript">
 	var repAdded = "<% out.print(session.getAttribute("repAdded")); %>";
 	var repChanged = "<% out.print(session.getAttribute("repChanged")); %>";
+	var repDeleted = "<% out.print(session.getAttribute("repDeleted")); %>";
 	
 	if (repAdded != "null") {
 		alert("Added "+repAdded+" as a customer representative.");
 	}
 	if (repChanged != "null") {
-		alert("Changed attributes of employee "+repChanged);
+		alert("Changed attributes of customer representative "+repChanged);
+	}
+	if (repDeleted != "null") {
+		alert("Deleted customer representative "+repDeleted);
 	}
 	<% 
 		session.removeAttribute("repAdded");
 		session.removeAttribute("repChanged");
+		session.removeAttribute("repDeleted");
 	%>
 	
 </script>
@@ -60,11 +73,16 @@
 	
 	<h4>Best Customer</h4>
 	<p>John Smith<p>
-	<% // This will just be a query that gets listed since there isn't any inputs required for it %>
+	<% // This will just be a query that gets listed since there isn't any inputs required for it
+		// Add up the total of each customers reservations, the top result is the best customer
+		
+	%>
 	
 	<h4>5 Most Active Transit Lines</h4>
 	<p>placeholder</p>
-	<% // Same here %>
+	<% // Same here
+		// Transit Lines with the most reservations
+	%>
 	
 	<br>
 	<form action="logout.jsp">
