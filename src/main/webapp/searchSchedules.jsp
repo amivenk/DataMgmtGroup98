@@ -10,7 +10,14 @@
 </head>
 <body>
 <div class="marginDiv">
-	<form action="welcome.jsp">
+	<%
+		String type = (String)session.getAttribute("type");
+		if (type != null && type.equals("customerRep")) {
+			out.print("<form action=\"customerRep.jsp\">");
+		} else {
+			out.print("<form action=\"welcome.jsp\">");
+		}
+	%>
 		<input type="submit" value="Back" class="defaultButton"/>
 	</form>
 	<br>
@@ -24,6 +31,7 @@
 			<th>Travel Time&emsp;</th>
 			<th>Origin&emsp;</th>
 			<th>Destination&emsp;</th>
+			<th>Fare&emsp;</th>
 			<th>Train #&emsp;</th>
 			<th>Stops&emsp;</th>
 		</tr>
@@ -41,7 +49,7 @@
 		
 		StringBuilder query = new StringBuilder();
 
-		query.append("SELECT linename, departure, arrival, travel, origin, dest, tid, scid ");
+		query.append("SELECT linename, departure, arrival, travel, origin, dest, fare, tid, scid ");
 		query.append("FROM trainsdb.schedule");
 		if (origin.equals("") && dest.equals("") && date.equals("")) {
 			query.append(";");
@@ -76,12 +84,12 @@
 			do {
 				out.print("<tr>");
 				for (int i = 1; i <= rsmd.getColumnCount() - 1; i++) {
-					out.print("<td>"+results.getString(rsmd.getColumnName(i))+"</td>");
+					out.print("<td>"+results.getString(rsmd.getColumnName(i))+"&emsp;</td>");
 				}
 				// Get the stops for the schedule
 				Statement stopsStmt = con.createStatement();
 				StringBuilder stopsQ = new StringBuilder();
-				stopsQ.append("SELECT s.name, s.city, s.state, TIME(sa.arrival), TIME(sa.departure)\n");
+				stopsQ.append("SELECT s.sid, sa.scid, s.name, s.city, s.state, TIME(sa.arrival), TIME(sa.departure)\n");
 				stopsQ.append("FROM trainsdb.stopsat sa, trainsdb.station s\n");
 				stopsQ.append("WHERE sa.scid="+results.getString("scid")+"\n");
 				stopsQ.append("AND sa.sid=s.sid\n");
@@ -91,8 +99,10 @@
 				
 				ResultSet stopsRes = stopsStmt.executeQuery(stopsQ.toString());
 						
-				out.print("<td><select name=\"stops\">");
+				out.print("<td><form action=\"createReservation.jsp\"><select name=\"scid\">");
 				while (stopsRes.next()) {
+					String scid = stopsRes.getString("scid");
+					String sid = stopsRes.getString("sid");
 					String stName = stopsRes.getString("name");
 					String stCity = stopsRes.getString("city");
 					String stState = stopsRes.getString("state");
@@ -101,9 +111,9 @@
 					
 					String stopString = String.format("%s, %s\nArrives: %s\nDeparts: %s", stCity, stState, arrive, depart == null ? "-" : depart);
 					
-					out.print("<option value=\""+stName+"\" title=\""+stopString+"\">"+stName+"</option>");
+					out.print("<option value=\""+scid+"\" title=\""+stopString+"\">"+stName+"</option>");
 				}
-				out.print("</select></td>");
+				out.print("</select><input type=\"submit\" value=\"Make Reservation\" class=\"defaultButton\"/></form>");
 				out.print("</tr>");
 			} while(results.next());
 		}

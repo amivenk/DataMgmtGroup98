@@ -62,7 +62,20 @@
 		out.print("</table>");
 	%>
 	<br>
-	<form action="admin.jsp">
+	<%
+		String type = (String)session.getAttribute("type");
+		if (type != null) {
+			if (type.equals("customerRep")) {
+				out.print("<form action=\"customerRep.jsp\">");
+			} else if (type.equals("admin")) {
+				out.print("<form action=\"admin.jsp\">");
+			} 
+		} else {
+			throw new Exception("Illegal employee type");
+			//response.sendRedirect("login.jsp");
+		}
+		
+	%>
 		<input type="submit" value="Back" class="defaultButton" />
 	</form>
 </div>

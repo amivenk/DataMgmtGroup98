@@ -48,6 +48,7 @@
 					ResultSet typeRes = stmt.executeQuery(q);
 					if (typeRes.next()) {
 						String type = typeRes.getString("type");
+						session.setAttribute("type", type);
 						if (type.equals("admin")) {
 							response.sendRedirect("admin.jsp");
 						} else if (type.equals("customerRep")) {
