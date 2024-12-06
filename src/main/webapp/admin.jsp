@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import="java.io.*,java.util.*,java.sql.*, com.group98.pkg.*" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,10 +73,26 @@
 	
 	
 	<h4>Best Customer</h4>
-	<p>John Smith<p>
+	
 	<% // This will just be a query that gets listed since there isn't any inputs required for it
 		// Add up the total of each customers reservations, the top result is the best customer
+		ApplicationDB db = new ApplicationDB();
+		Connection con = db.getConnection();
+		Statement stmt = con.createStatement();
 		
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT c.fname, c.lname, SUM(r.total) sum\n");
+		query.append("FROM trainsdb.customer c, trainsdb.reservation r\n");
+		query.append("WHERE c.username=r.username\n");
+		query.append("GROUP BY c.fname, c.lname ORDER BY sum DESC;");
+		
+		ResultSet res = stmt.executeQuery(query.toString());
+		res.next();
+		
+		// Round to 2 decimal places
+		float sum = ((int) ((res.getFloat("sum") + 0.005f) * 100)) / 100f;
+		
+		out.print(res.getString("fname")+" "+res.getString("lname")+" $"+sum);
 	%>
 	
 	<h4>5 Most Active Transit Lines</h4>
