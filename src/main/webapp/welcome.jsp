@@ -13,16 +13,24 @@
 	<%
 		// Get the username from the session, set by checkCredentials
 		String username = (String)session.getAttribute("username");
+		
+		String reservationCanceled = (String)session.getAttribute("reservationCanceled");
 	%>
 	<script type="text/javascript">
-		var invalid = "<% out.print(username); %>";
+		const invalid = "<%=username %>";
+		const reservationCanceled = "<%=reservationCanceled %>";
 		
 		if (invalid == "null") {
 			alert("Invalid Session.");
 		}
+		if (reservationCanceled != "null") {
+			alert("Reservation #"+reservationCanceled+" canceled.");
+		}
 	</script>
 	
 	<%
+		session.removeAttribute("reservationCanceled");
+	
 		// If there is no username the session is invalid
 		if (username == null) {
 			response.sendRedirect("login.jsp");
@@ -50,7 +58,7 @@
 			
 			// It's only split so it isn't a gigantic line of mess
 			StringBuilder query = new StringBuilder();
-			query.append("SELECT date, linename, tid, passenger, type, total ");
+			query.append("SELECT date, linename, tid, passenger, type, total, resnum ");
 			query.append("FROM trainsdb.reservation r, trainsdb.schedule sc ");
 			query.append("WHERE r.username='"+username+"' AND r.date>='"+today+"' AND r.scid=sc.scid;");
 			String q = query.toString();
@@ -60,9 +68,11 @@
 			
 			while (results.next()) {
 				out.print("<tr>");
-				for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+				for (int i = 1; i < rsmd.getColumnCount(); i++) {
 				 	out.print("<td>"+results.getString(rsmd.getColumnName(i))+"</td>");
 				}
+				out.print("<td><form action=\"cancelReservation.jsp\"> <input type=\"submit\" value=\"Cancel\" class=\"defaultButton\"/>");
+				out.print("<input type=\"hidden\" name=\"resnum\" value=\""+results.getString("resnum")+"\" /> </form></td>");
 				out.print("</tr>");
 			}
 		%>

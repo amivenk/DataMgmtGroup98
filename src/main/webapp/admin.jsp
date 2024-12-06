@@ -96,11 +96,23 @@
 	%>
 	
 	<h4>5 Most Active Transit Lines</h4>
-	<p>placeholder</p>
 	<% // Same here
 		// Transit Lines with the most reservations
+		StringBuilder mostResQ = new StringBuilder();
+		mostResQ.append("SELECT sc.linename, COUNT(*) c\n");
+		mostResQ.append("FROM trainsdb.schedule sc, trainsdb.reservation r\n");
+		mostResQ.append("WHERE sc.scid=r.scid\n");
+		mostResQ.append("GROUP BY(sc.linename) ORDER BY c DESC LIMIT 5;");
+		
+		res = stmt.executeQuery(mostResQ.toString());
+		
+		int i = 1;
+		while(res.next()) {
+			out.print(i+". "+res.getString("linename")+": "+res.getString("c")+" reservations");
+			i++;
+		}
 	%>
-	
+	<br>
 	<br>
 	<form action="logout.jsp">
 		<input type="submit" value="Log out" class="defaultButton" />
