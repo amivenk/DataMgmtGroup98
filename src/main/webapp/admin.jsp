@@ -40,7 +40,7 @@
 </script>
 
 <div class="marginDiv">
-	<h4>Customer Representatives</h4>
+	<h3>Customer Representatives</h3>
 	<form method="post" action="addCustomerRep.jsp">
 		<input name="ssn" type="text" placeholder="SSN" class="inputField" required/>
 		<input name="firstName" type="text" placeholder="First Name" class="inputField" required/>
@@ -59,27 +59,77 @@
 	</form>
 	
 	
-	<h4>Sales Report</h4>
+	<h3>Sales Report</h3>
 	<p>placeholder</p>
 	
-	<h4>Search Reservations</h4>
+	<h3>Search Reservations</h3>
 	<form action="searchReservations.jsp" method="post">
 		<input type="text" name="transitLine" placeholder="Transit Line" class="inputField"/>
 		<input type="text" name="customerName" placeholder="Customer Name" class="inputField"/>
 		<input type="submit" value="Search" class="defaultButton" />
 	</form>
 	
-	<h4>Revenue</h4>
-	
-	
-	<h4>Best Customer</h4>
-	
-	<% // This will just be a query that gets listed since there isn't any inputs required for it
-		// Add up the total of each customers reservations, the top result is the best customer
+	<h3>Revenue</h3>
+	<h4>Transit Lines</h4>
+	<table>
+	<tr>
+		<th>Line Name</th>
+		<th>Revenue</th>
+	</tr>
+	<%
 		ApplicationDB db = new ApplicationDB();
 		Connection con = db.getConnection();
 		Statement stmt = con.createStatement();
 		
+		StringBuilder revQ = new StringBuilder();
+		revQ.append("SELECT sc.linename, SUM(r.total) sum\n");
+		revQ.append("FROM trainsdb.schedule sc, trainsdb.reservation r\n");
+		revQ.append("WHERE sc.scid = r.scid\n");
+		revQ.append("GROUP BY sc.linename ORDER BY sum DESC;");
+		
+		ResultSet linesRev = stmt.executeQuery(revQ.toString());
+		
+		while(linesRev.next()) {
+			out.print("<tr>");
+			out.print("<td>"+linesRev.getString("linename")+"&emsp;</td>");
+			out.print("<td>"+linesRev.getString("sum")+"</td>");
+			out.print("</tr>");
+		}
+	%>
+	</table>
+	<h4>Per Customer</h4>
+	<table>
+	<tr>
+		<th>Name</th>
+		<th>Revenue</th>
+	</tr>
+	<%
+		StringBuilder custRev = new StringBuilder();
+		custRev.append("SELECT c.fname, c.lname, SUM(r.total) sum\n");
+		custRev.append("FROM trainsdb.customer c, trainsdb.reservation r\n");
+		custRev.append("WHERE c.username=r.username\n");
+		custRev.append("GROUP BY c.fname, c.lname ORDER BY sum DESC;");
+		
+		ResultSet custRevRes = stmt.executeQuery(custRev.toString());
+		
+		while(custRevRes.next()) {
+			out.print("<tr>");
+			out.print("<td>"+custRevRes.getString("fname")+" "+custRevRes.getString("lname")+"</td>");
+			
+			// Round to 2 decimal places
+			float sum = ((int) ((custRevRes.getFloat("sum") + 0.005f) * 100)) / 100f;
+			
+			out.print("<td>"+sum+"</td>");
+			out.print("</tr>");
+		}
+	%>
+	</table>
+	
+	<h3>Best Customer</h3>
+	
+	<% // This will just be a query that gets listed since there isn't any inputs required for it
+		// Add up the total of each customers reservations, the top result is the best customer
+
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT c.fname, c.lname, SUM(r.total) sum\n");
 		query.append("FROM trainsdb.customer c, trainsdb.reservation r\n");
@@ -95,8 +145,9 @@
 		out.print(res.getString("fname")+" "+res.getString("lname")+" $"+sum);
 	%>
 	
-	<h4>5 Most Active Transit Lines</h4>
-	<% // Same here
+	<h3>5 Most Active Transit Lines</h3>
+	<% 
+		// Same here
 		// Transit Lines with the most reservations
 		StringBuilder mostResQ = new StringBuilder();
 		mostResQ.append("SELECT sc.linename, COUNT(*) c\n");
