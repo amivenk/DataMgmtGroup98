@@ -11,6 +11,10 @@
 <body>
 <div class="marginDiv">
 	<%
+	
+		// This page is reused for customers and customer reps so it has different behaviors
+		// depending on who is using it
+	
 		String type = (String)session.getAttribute("type");
 		if (type != null && type.equals("customerRep")) {
 			out.print("<form action=\"customerRep.jsp\">");
@@ -22,7 +26,10 @@
 	</form>
 	<br>
 	<h2>Schedules</h2>
-	<p>Click the stops menu to view all stops. Hover over a stop to see more info</p>
+	<%
+		if (type == null) 
+			out.print("<p>Click the stops menu to view all stops. Hover over a stop to see more info</p>");
+	%>
 	<table>
 		<tr>
 			<th>Line&emsp;</th>
@@ -33,16 +40,20 @@
 			<th>Destination&emsp;</th>
 			<th>Fare&emsp;</th>
 			<th>Train #&emsp;</th>
-			<th>Stops&emsp;</th>
+			<%
+				if (type == null)
+					out.print("<th>Stops&emsp;</th>");
+			%>
+			
 		</tr>
 	<%
 		ApplicationDB db = new ApplicationDB();
 		Connection con = db.getConnection();
 		Statement stmt = con.createStatement();
 		
-		String origin = request.getParameter("origin");
-		String dest = request.getParameter("destination");
-		String date = request.getParameter("date");
+		String origin = request.getParameter("origin") == null ? "" : request.getParameter("origin");
+		String dest = request.getParameter("destination") == null ? "" : request.getParameter("destination");
+		String date = request.getParameter("date") == null ? "" : request.getParameter("date");
 		
 		String[] names = {"origin", "dest", "DATE(departure)"};
 		String[] params = {origin, dest, date};
@@ -86,35 +97,38 @@
 				for (int i = 1; i <= rsmd.getColumnCount() - 1; i++) {
 					out.print("<td>"+results.getString(rsmd.getColumnName(i))+"&emsp;</td>");
 				}
-				// Get the stops for the schedule
-				Statement stopsStmt = con.createStatement();
-				StringBuilder stopsQ = new StringBuilder();
-				stopsQ.append("SELECT s.sid, sa.scid, s.name, s.city, s.state, TIME(sa.arrival), TIME(sa.departure)\n");
-				stopsQ.append("FROM trainsdb.stopsat sa, trainsdb.station s\n");
-				stopsQ.append("WHERE sa.scid="+results.getString("scid")+"\n");
-				stopsQ.append("AND sa.sid=s.sid\n");
-				stopsQ.append("ORDER BY sa.arrival ASC;");
-				// It's definitely more efficient to just make a big 1 line string, but this is easier for debugging
-				// and looks cleaner
 				
-				ResultSet stopsRes = stopsStmt.executeQuery(stopsQ.toString());
+				if (type != null && !type.equals("customerRep")) {
+					// Get the stops for the schedule
+					Statement stopsStmt = con.createStatement();
+					StringBuilder stopsQ = new StringBuilder();
+					stopsQ.append("SELECT s.sid, sa.scid, s.name, s.city, s.state, TIME(sa.arrival), TIME(sa.departure)\n");
+					stopsQ.append("FROM trainsdb.stopsat sa, trainsdb.station s\n");
+					stopsQ.append("WHERE sa.scid="+results.getString("scid")+"\n");
+					stopsQ.append("AND sa.sid=s.sid\n");
+					stopsQ.append("ORDER BY sa.arrival ASC;");
+					// It's definitely more efficient to just make a big 1 line string, but this is easier for debugging
+					// and looks cleaner
+					
+					ResultSet stopsRes = stopsStmt.executeQuery(stopsQ.toString());
+							
+					out.print("<td><form action=\"createReservation.jsp\"><select name=\"scid\">");
+					while (stopsRes.next()) {
+						String scid = stopsRes.getString("scid");
+						String sid = stopsRes.getString("sid");
+						String stName = stopsRes.getString("name");
+						String stCity = stopsRes.getString("city");
+						String stState = stopsRes.getString("state");
+						String arrive = stopsRes.getString("TIME(sa.arrival)");
+						String depart = stopsRes.getString("TIME(sa.departure)");
 						
-				out.print("<td><form action=\"createReservation.jsp\"><select name=\"scid\">");
-				while (stopsRes.next()) {
-					String scid = stopsRes.getString("scid");
-					String sid = stopsRes.getString("sid");
-					String stName = stopsRes.getString("name");
-					String stCity = stopsRes.getString("city");
-					String stState = stopsRes.getString("state");
-					String arrive = stopsRes.getString("TIME(sa.arrival)");
-					String depart = stopsRes.getString("TIME(sa.departure)");
-					
-					String stopString = String.format("%s, %s\nArrives: %s\nDeparts: %s", stCity, stState, arrive, depart == null ? "-" : depart);
-					
-					out.print("<option value=\""+scid+"\" title=\""+stopString+"\">"+stName+"</option>");
+						String stopString = String.format("%s, %s\nArrives: %s\nDeparts: %s", stCity, stState, arrive, depart == null ? "-" : depart);
+						
+						out.print("<option value=\""+scid+"\" title=\""+stopString+"\">"+stName+"</option>");
+					}
+					out.print("</select><input type=\"submit\" value=\"Make Reservation\" class=\"defaultButton\"/></form>");
+					out.print("</tr>");	
 				}
-				out.print("</select><input type=\"submit\" value=\"Make Reservation\" class=\"defaultButton\"/></form>");
-				out.print("</tr>");
 			} while(results.next());
 		}
 	

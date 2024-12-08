@@ -10,6 +10,23 @@
 </head>
 <body>
 <div class="marginDiv">
+	<%
+		String type = (String)session.getAttribute("type");
+		if (type != null) {
+			if (type.equals("customerRep")) {
+				out.print("<form action=\"customerRep.jsp\">");
+			} else if (type.equals("admin")) {
+				out.print("<form action=\"admin.jsp\">");
+			} 
+		} else {
+			throw new Exception("Illegal employee type");
+			//response.sendRedirect("login.jsp");
+		}
+		
+	%>
+		<input type="submit" value="Back" class="defaultButton" />
+	</form>
+	<br>
 	<table>
 		<tr>
 			<th>Date&emsp;</th>
@@ -24,24 +41,37 @@
 		Connection con = db.getConnection();
 		Statement stmt = con.createStatement();
 		
-		String tLine = request.getParameter("transitLine");
-		String customer = request.getParameter("customerName");
+		String tLine = request.getParameter("transitLine") == null ? "" : request.getParameter("transitLine");
+		String customer = request.getParameter("customerName") == null ? "" : request.getParameter("customerName");
+		String date = request.getParameter("date") == null ? "" : request.getParameter("date");
 		
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT date, username, passenger, type, total, sc.linename\n");
 		query.append("FROM trainsdb.reservation r, trainsdb.schedule sc\n");
 		query.append("WHERE r.scid = sc.scid\n");
-		if (tLine.equals("") && customer.equals("")) {
+		if (tLine.equals("") && customer.equals("") && date.equals("")) {
 			query.append(";");
 		} else {
 			query.append("AND ");
-			if (!tLine.equals("") && !customer.equals("")) {
-				query.append("sc.linename="+tLine+"AND r.passenger="+customer+";");
-			} else if(!tLine.equals("")){
-				query.append("sc.linename='"+tLine+"';");
-			} else {
-				query.append("r.passenger='"+customer+"';");
+			String[] names = {"r.date", "r.passenger", "sc.linename"};
+			String[] params = {date, customer, tLine};
+			int populatedFields = 0;
+			for (String s : params) {
+				populatedFields = s.equals("") ? populatedFields : populatedFields + 1;
 			}
+			populatedFields--;
+			for (int i = 0; i < params.length; i++) {
+				if (params[i].equals("")){
+					continue;
+				} else {
+					query.append(names[i]+"='"+params[i]+"' ");
+					if (populatedFields > 0) {
+						populatedFields--;
+						query.append("AND ");
+					}
+				}
+			}
+			query.append(";");
 		}
 		
 		ResultSet reservations = stmt.executeQuery(query.toString());
@@ -61,23 +91,6 @@
 		}
 		out.print("</table>");
 	%>
-	<br>
-	<%
-		String type = (String)session.getAttribute("type");
-		if (type != null) {
-			if (type.equals("customerRep")) {
-				out.print("<form action=\"customerRep.jsp\">");
-			} else if (type.equals("admin")) {
-				out.print("<form action=\"admin.jsp\">");
-			} 
-		} else {
-			throw new Exception("Illegal employee type");
-			//response.sendRedirect("login.jsp");
-		}
-		
-	%>
-		<input type="submit" value="Back" class="defaultButton" />
-	</form>
 </div>
 </body>
 </html>
