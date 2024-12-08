@@ -18,40 +18,12 @@
 	}
 %>
 <div class="marginDiv">
-	<h4>Train Schedules</h4>
-	<form action="searchSchedules.jsp" method="post">
-		Origin:
-		<select name="origin">
 		<%
+			
 			ApplicationDB db = new ApplicationDB();
 			Connection con = db.getConnection();
 			Statement stmt = con.createStatement();
-			
-			String q = "SELECT DISTINCT origin FROM trainsdb.schedule;";
-			
-			ResultSet res = stmt.executeQuery(q);
-			
-			while (res.next()) {
-				out.print("<option value=\""+res.getString("origin")+"\">"+res.getString("origin")+"</option>");
-			}
 		%>
-		</select>
-		Destination:
-		<select name="destination">
-			<%
-				q = "SELECT DISTINCT dest FROM trainsdb.schedule;";
-				res = stmt.executeQuery(q);
-				
-				while (res.next()) {
-					out.print("<option value=\""+res.getString("dest")+"\">"+res.getString("dest")+"</option>");
-				}
-			%>
-		</select>
-		<input type="submit" value="Search" class="defaultButton" />
-	</form>
-	<form action="searchSchedules.jsp" method="post">
-		<input type="submit" value="View all schedules" class="defaultButton" />
-	</form>
 	
 	<h4>Customer Q&A</h4>
 	<h5>Search:</h5>
@@ -64,9 +36,17 @@
 	</form>
 	
 	<h4>Station Schedules</h4>
-	<form action="stationSchedules.jsp" >
+	<form action="searchSchedules.jsp" >
 		Station:
-		<input type="text" name="station" class="inputField" />
+		<select name="station">
+			<%
+				String q = "SELECT name FROM trainsdb.station;";
+				ResultSet res = stmt.executeQuery(q);
+				while (res.next()) {
+					out.print("<option value=\""+res.getString("name")+"\">"+res.getString("name")+"</option>");
+				}
+			%>
+		</select>
 		<input type="submit" value="Search" class="defaultButton" />
 	</form>
 	
