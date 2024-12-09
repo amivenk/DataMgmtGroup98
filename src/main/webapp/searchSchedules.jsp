@@ -36,6 +36,38 @@
 		if (type == null) 
 			out.print("<p>Click the stops menu to view all stops. Hover over a stop to see more info</p>");
 	%>
+	<br>
+	<script type="text/javascript">
+		window.onload = () => {
+			let sortby = "<%= request.getParameter("sortby") %>"
+			
+			if (sortby == "arrival") {
+				document.getElementById("arrivalRadio").checked = true;
+			} else if (sortby == "departure") {
+				document.getElementById("departRadio").checked = true;
+			} else if (sortby == "fare") {
+				document.getElementById("fareRadio").checked = true;
+			}
+		}
+	
+		function submitSort() {
+			document.getElementById("sortForm").submit();
+		}
+	</script>	
+	
+	<form action="searchSchedules.jsp" id="sortForm">
+	<input type="hidden" name="origin" value="<%=request.getParameter("origin") %>" />
+	<input type="hidden" name="destination" value="<%=request.getParameter("destination") %>" />
+	<input type="hidden" name="date" value="<%=request.getParameter("date") %>" />
+	Sort By:<br>
+	<label for="arrivalRadio">Arrival Time</label>
+	<input id="arrivalRadio" type="radio" name="sortby" onclick="submitSort()" value="arrival" />
+	<label for="departRadio">Departure Time</label>
+	<input id="departRadio" type="radio" name="sortby" onclick="submitSort()" value="departure" />
+	<label for="fareRadio">Fare</label>
+	<input id="fareRadio" type="radio" name="sortby" onclick="submitSort()" value="fare"/>
+	</form>
+	<br>
 	<table>
 		<tr>
 			<th>Line&emsp;</th>
@@ -61,6 +93,7 @@
 			String origin = request.getParameter("origin") == null ? "" : request.getParameter("origin");
 			String dest = request.getParameter("destination") == null ? "" : request.getParameter("destination");
 			String date = request.getParameter("date") == null ? "" : request.getParameter("date");
+			String sortby = request.getParameter("sortby") == null ? "" : request.getParameter("sortby");
 			
 			String[] names = {"origin", "dest", "DATE(departure)"};
 			String[] params = {origin, dest, date};
@@ -70,6 +103,9 @@
 			query.append("SELECT linename, departure, arrival, travel, origin, dest, fare, tid, scid ");
 			query.append("FROM trainsdb.schedule");
 			if (origin.equals("") && dest.equals("") && date.equals("")) {
+				if (!sortby.equals("")) {
+					query.append(" ORDER BY "+sortby+" DESC");
+				}
 				query.append(";");
 			} else {
 				query.append(" WHERE ");
@@ -88,6 +124,9 @@
 							query.append("AND ");
 						}
 					}
+				}
+				if (!sortby.equals("")) {
+					query.append("ORDER BY "+sortby+" DESC");
 				}
 				query.append(";");
 			}
