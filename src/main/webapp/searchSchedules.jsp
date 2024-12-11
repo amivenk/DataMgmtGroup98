@@ -207,8 +207,8 @@
 	<tr>
 		<th><label for="formScid">Schedule ID</label></th>
 		<th><label for="editName">Line Name</label></th>
-		<th><label for="editDepart">Departure Time</label></th>
-		<th><label for="editArrival">Arrival Time</label></th>
+		<th><label for="editDepart">Departure</label></th>
+		<th><label for="editArrival">Arrival</label></th>
 		<th><label for="editTravel">Travel Time</label></th>
 		<th><label for="editOrigin">Origin Station</label></th>
 		<th><label for="editDest">Destination Station</label></th>
@@ -218,8 +218,8 @@
 	<tr>
 		<td><input type="text" id="formScid" name="scid" class="inputField" value="0" readonly /></td>
 		<td><input type="text" id="editName" name="linename" class="inputField" placeholder="Line Name"/></td>
-		<td><input type="time" id="editDepart" name="departure" class="inputField"/></td>
-		<td><input type="time" id="editArrival" name="arrival" class="inputField"/></td>
+		<td><input type="time" id="editDepartTime" name="departure" class="inputField"/></td>
+		<td><input type="time" id="editArrivalTime" name="arrival" class="inputField"/></td>
 		<td><input type="text" id="editTravel" name="travel" class="inputField" placeholder="Travel Time"/></td>
 		<td>
 		<select name="origin" id="editOrigin">
@@ -257,6 +257,12 @@
 			%>
 		</select>
 		</td>
+	</tr>
+	<tr>
+	<td></td>
+	<td></td>
+	<td><input type="date" name="departureDate" class="inputField"/></td>
+	<td><input type="date" name="arrivalDate" class="inputField"/></td>
 	</tr>
 	</table>
 	<input type="submit" class="defaultButton" />

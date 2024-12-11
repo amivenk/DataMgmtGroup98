@@ -14,11 +14,13 @@
 		Connection con = db.getConnection();
 		Statement stmt = con.createStatement();
 		
-		String q = "SELECT DATE(departure) d FROM trainsdb.schedule WHERE scid="+request.getParameter("scid")+";";
+		String q = "SELECT DATE(departure) d, TIME(departure) dt, TIME(arrival) at FROM trainsdb.schedule WHERE scid="+request.getParameter("scid")+";";
 		ResultSet res = stmt.executeQuery(q);
 		res.next();
 		
 		String date = res.getString("d");
+		String departTime = res.getString("dt");
+		String arrivalTime = res.getString("at");
 		
 		String[] attrs = {"linename", "departure", "arrival", "travel", "origin", "dest", "fare", "tid"};
 		
@@ -27,16 +29,24 @@
 		
 		for (int i = 0; i < attrs.length; i++) {
 			String attr = request.getParameter(attrs[i]);
-			if (!attr.equals("")) {
-				if (attrs[i].equals("departure") || attrs[i].equals("arrival")) {
-					attr = date+" "+attr+":00";
+			if (attr != null && !attr.equals("")) {
+				query.append(attrs[i]+"='"+attr+"',");
+			} else if (attrs[i].startsWith("departure") || attrs[i].startsWith("arrival")) {
+				if (!request.getParameter(attrs[i]+"Date").equals("")) {
+					date = request.getParameter(attrs[i]+"Date");
+				}
+				if (request.getParameter(attrs[i]).equals("")) {
+					if (attrs[i].equals("departure"))
+						attr = date+" "+departTime;
+					else
+						attr = date+" "+arrivalTime;
 				}
 				query.append(attrs[i]+"='"+attr+"',");
 			}
 		}
 		query.deleteCharAt(query.length() - 1);
-		query.append(" WHERE scid='"+request.getParameter("scid")+"';");
-		
+		query.append(" WHERE scid="+request.getParameter("scid")+";");
+	
 		
 		int affectedRows = stmt.executeUpdate(query.toString());
 		

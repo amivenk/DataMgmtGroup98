@@ -58,9 +58,54 @@
 		<input type="submit" value="Search Customer Representatives" class="defaultButton"/>
 	</form>
 	
+	<%
+		ApplicationDB db = new ApplicationDB();
+		Connection con = db.getConnection();
+		Statement stmt = con.createStatement();
+	%>
 	
 	<h3>Sales Report</h3>
-	<p>placeholder</p>
+	<form action="admin.jsp" id="yearSelect">
+		<select name="year" onchange="() => {document.getElementById('yearSelect').submit();}">
+			<%
+				String yearsQ = "SELECT DISTINCT YEAR(date) y FROM trainsdb.reservation;";
+				ResultSet years = stmt.executeQuery(yearsQ);
+				
+				while (years.next()) {
+					out.print("<option value=\""+years.getString("y")+"\">"+years.getString("y")+"</option>");
+				}
+			%>
+		</select>
+	</form>
+	
+	<%
+		String year = request.getParameter("year") != null ? request.getParameter("year") : "2024";
+		
+		StringBuilder reportQ = new StringBuilder();
+		reportQ.append("SELECT MONTH(date) m, SUM(total) s\n");
+		reportQ.append("FROM trainsdb.reservation\n");
+		reportQ.append("WHERE YEAR(date)="+year+"\n");
+		reportQ.append("GROUP BY MONTH(date);");
+		
+		ResultSet salesReport = stmt.executeQuery(reportQ.toString());
+		
+	%>	
+	<table>
+		<tr>
+			<th>Month&emsp;</th>
+			<th>Revenue</th>
+		</tr>
+		<%
+			while (salesReport.next()) {
+				float total = ((int) ((salesReport.getFloat("s") + 0.005f) * 100)) / 100f;
+				
+				out.print("<tr>");
+				out.print("<td>"+salesReport.getString("m")+"</td>");
+				out.print("<td>$"+total+"</td>");
+				out.print("</tr>");
+			}
+		%>
+	</table>
 	
 	<h3>Search Reservations</h3>
 	<form action="searchReservations.jsp" method="post">
@@ -77,10 +122,6 @@
 		<th>Revenue</th>
 	</tr>
 	<%
-		ApplicationDB db = new ApplicationDB();
-		Connection con = db.getConnection();
-		Statement stmt = con.createStatement();
-		
 		StringBuilder revQ = new StringBuilder();
 		revQ.append("SELECT sc.linename, SUM(r.total) sum\n");
 		revQ.append("FROM trainsdb.schedule sc, trainsdb.reservation r\n");
